@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
 import openfl.utils.Assets as OpenFlAssets;
+import openfl.utils.Assets;
 import sys.io.File;
 import flash.display.BitmapData;
 import Sys;
@@ -59,9 +60,10 @@ class Paths
 
 	public static function getDirs(library:String,?base='assets/images'){
 		var folders:Array<String>=[];
+		var list = Assets.list();
 		// TODO: openflassets shit maybe?
-		for(folder in FileSystem.readDirectory('${base}/${library}') ){
-			if(!folder.contains(".") && FileSystem.isDirectory('${base}/${library}/${folder}')){
+		for(folder in HSys.readDirectory('${base}/${library}') ){
+			if(!folder.contains(".") && list.filter(text -> text.contains('${base}/${library}/${folder}')){
 				folders.push(folder);
 			}
 		}
@@ -77,8 +79,7 @@ class Paths
 		var path = 'assets/images/${library}/${skin}/metadata.json';
 		if(OpenFlAssets.exists(path)){
 			return Json.parse(OpenFlAssets.getText(path));
-		}else if(FileSystem.exists(path)){
-			return Json.parse(File.getContent(path));
+		
 		}
 		return Json.parse(File.getContent('assets/images/${library}/fallback/metadata.json'));
 	}
@@ -121,7 +122,7 @@ class Paths
 			}else{
 				while(idx<pathsNoNotetype.length){
 					path = pathsNoNotetype[idx];
-					if(FileSystem.exists(path))
+					if(Assets.exists(path))
 						break;
 
 					idx++;
@@ -138,7 +139,7 @@ class Paths
 			if(noteType!='' && noteType!='default'){
 				while(idx<pathsNotetype.length){
 					path = pathsNotetype[idx];
-					if(FileSystem.exists(path))
+					if(Assets.exists(path))
 						break;
 
 					idx++;
@@ -147,7 +148,7 @@ class Paths
 			}else{
 				while(idx<pathsNoNotetype.length){
 					path = pathsNoNotetype[idx];
-					if(FileSystem.exists(path))
+					if(Assets.exists(path))
 						break;
 
 					idx++;
@@ -174,9 +175,9 @@ class Paths
 			if(!doShit){
 				var pathPng = noteSkinPath('${key}.png',library,skin,modifier,noteType,useOpenFLAssetSystem);
 				var image:Null<BitmapData>=null;
-				if(FileSystem.exists(pathPng)){
+				if(Aasets.exists(pathPng)){
 					doShit=true;
-					image = BitmapData.fromFile(pathPng);
+					image = Assets.getBitmapData(pathPng);
 					FlxG.bitmap.add(image,false,bitmapName);
 				}
 				if(image!=null)
@@ -198,7 +199,7 @@ class Paths
 			}
 		}else{
 			var path = noteSkinPath('${key}',library,skin,modifier,noteType,useOpenFLAssetSystem);
-			if(FileSystem.exists(path)){
+			if(Assets.exists(path)){
 				return Cache.getText(path);
 			}
 		}
@@ -228,7 +229,7 @@ class Paths
 					var pathPng = noteSkinPath('${key}.png',library,skin,modifier,noteType,useOpenFLAssetSystem);
 					if(FileSystem.exists(pathPng)){
 						doShit=true;
-						FlxG.bitmap.add(BitmapData.fromFile(pathPng),false,bitmapName);
+						FlxG.bitmap.add(Assets.getBitmapData(pathPng),false,bitmapName);
 					}
 				}
 				if(doShit)
